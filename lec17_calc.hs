@@ -46,7 +46,7 @@ dangerParse = undefined
 eval :: AST -> Integer
 eval = undefined
 
---Optional bug encouraged Step 0
+--Optional but encouraged Step 0
 numOps :: AST -> Integer
 numOps = undefined
 
