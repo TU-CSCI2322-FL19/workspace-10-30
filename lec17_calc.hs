@@ -42,7 +42,10 @@ tokenGoal2 = [OperT Plus, OperT Mult, NumT 2, NumT 3, OperT Mult, NumT 3, NumT 4
 --Step 2
 dangerParse :: [Token] -> AST 
 dangerParse (NumT x:ts) = Leaf x
-dangerParse (OperT op:ts) = Node op (dangerParse ts) (dangerParse (tail ts))
+dangerParse (OperT op:ts) = 
+    let lft = (dangerParse ts) 
+        rgt = (dangerParse (tail ts))
+    in Node op lft rgt
 
 --Step 1
 eval :: AST -> Integer
