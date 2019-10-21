@@ -9,7 +9,6 @@ inputWords = words inputStr
 data Token = OperT Op | NumT Integer deriving (Eq, Show)
 data Op = Mult | Minus | Plus | Div deriving (Eq, Show)
 
-tokenGoal = [OperT Plus, NumT 7, OperT Div, NumT 232, OperT Mult, NumT 3, NumT 4]
 
 --step 1
 dangerLex :: String -> Token
@@ -38,10 +37,12 @@ lexer str = if all isDigit str
 data AST = Leaf Integer | Node Op AST AST deriving (Eq, Show)
 
 goalAST = Node Plus (Leaf 7) (Node Div (Leaf 232) (Node Mult (Leaf 3) (Leaf 4)))
+tokenGoal2 = [OperT Plus, OperT Mult, NumT 2, NumT 3, OperT Mult, NumT 3, NumT 4]
 
 --Step 2
 dangerParse :: [Token] -> AST 
-dangerParse = undefined
+dangerParse (NumT x:ts) = Leaf x
+dangerParse (OperT op:ts) = Node op (dangerParse ts) (dangerParse (tail ts))
 
 --Step 1
 eval :: AST -> Integer
