@@ -56,10 +56,10 @@ eval2 (Leaf x) = x
 eval2 (Node op lft rgt) = evalOp op (eval2 lft) (eval2 rgt)
 
 evalOp :: Op -> Integer -> Integer -> Integer
-evalOp Plus x y = x + y
-evalOp Mult x y = x*y
-evalOp Div x y = x `div` y
-evalOp Minus x y = x - y
+evalOp Plus = (+)
+evalOp Mult = (*)
+evalOp Div = div
+evalOp Minus = (-)
 
 --Optional but encouraged Step 0
 isOp :: Token -> Bool
