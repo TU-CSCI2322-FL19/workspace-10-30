@@ -40,13 +40,23 @@ goalAST = Node Plus (Leaf 7) (Node Div (Leaf 232) (Node Mult (Leaf 3) (Leaf 4)))
 tokenGoal2 = [OperT Plus, OperT Mult, NumT 2, NumT 3, OperT Mult, NumT 3, NumT 4]
 
 --Step 2
-dangerParse :: [Token] -> AST 
-dangerParse (NumT x:ts) = Leaf x
-dangerParse (OperT op:ts) = 
-    let lft = (dangerParse ts) 
-        rgt = (dangerParse (tail ts))
-    in Node op lft rgt
+dangerParse :: [Token] -> AST
+dangerParse tokens = 
+    let (tree, afterTree) =  aux tokens
+    in if null afterTree
+       then tree
+       else error "Invalid input."
+aux :: [Token] -> (AST, [Token])
+aux [] = error "Invalid input."
+aux (NumT x:ts) = (Leaf x, ts)
+aux (OperT op:ts) = 
+            let (lft, afterLeft) = aux ts
+                (rgt, afterRight) = aux afterLeft
+            in (Node op lft rgt, afterRight)
 
+foo = let wlAlpha = 1:wlBeta
+          wlBeta = 2:wlAlpha
+      in wlAlpha
 --Step 1
 eval :: AST -> Integer
 eval (Leaf x) = x
