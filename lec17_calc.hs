@@ -88,3 +88,5 @@ numOps (Node op lft rgt) = 1 + (numOps lft) + (numOps rgt)
 --Step 3
 evalString :: String -> Maybe Integer
 evalString = undefined
+
+

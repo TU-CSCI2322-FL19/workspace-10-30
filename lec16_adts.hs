@@ -9,7 +9,18 @@ winner Paper Rock = "Player One Wins!"
 winner Paper Scissor = "Player Two Wins!"
 winner _ _ = "Tie! Trie again!"
 
-data Velocity = MPS Double | FPS Double deriving (Show, Eq)
+data Velocity = MPS Double | FPS Double deriving Eq
+
+instance Show Velocity where
+  show (MPS x) = show x ++ " m/s"
+  show (FPS x) = show x ++ " f/s"
+
+
+readVelocity :: String -> Velocity
+readVelocity str = case words str of
+    [x, "m/s"] -> MPS $ read x
+    [y, "f/s"] -> FPS $ read y
+    _ -> error "Invalid velocity."
 inMPS :: Velocity -> Double
 inMPS (MPS x) = x
 inMPS (FPS y) = y / 3.28084 
