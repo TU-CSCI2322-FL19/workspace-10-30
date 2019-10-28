@@ -1,11 +1,11 @@
 module BOOOl where
 {-# LANGUAGE FlexibleInstances #-}
-class BOOOl a where
+class Eq a => BOOOl a where
   trick :: a
   treat :: a
   trOOO :: a -> Bool
   trickOrTreat :: a -> b -> b -> b
-  trOOO boool = trickOrTreat boool True False
+  trOOO boool = a == treat
   trickOrTreat cond trick treat = if trOOO cond then treat else trick
 
 reaper :: BOOOl a => [a] -> [a] 
