@@ -1,4 +1,5 @@
 import Data.List
+import BOOOl
 --data BSTInt = Leaf | Node Int BSTInt BSTInt deriving (Show, Eq)
 --data BSTChar = Leaf | Node Char BSTChar BSTChar deriving (Show, Eq)
 
