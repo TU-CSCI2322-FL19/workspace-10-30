@@ -40,19 +40,26 @@ goalAST = Node Plus (Leaf 7) (Node Div (Leaf 232) (Node Mult (Leaf 3) (Leaf 4)))
 tokenGoal2 = [OperT Plus, OperT Mult, NumT 2, NumT 3, OperT Mult, NumT 3, NumT 4]
 
 --Step 2
-dangerParse :: [Token] -> AST
+dangerParse :: [Token] -> Maybe AST
 dangerParse tokens = 
     let (tree, afterTree) =  aux tokens
     in if null afterTree
        then tree
        else error "Invalid input."
-aux :: [Token] -> (AST, [Token])
+
+aux :: [Token] -> Maybe (AST, [Token])
 aux [] = error "Invalid input."
 aux (NumT x:ts) = (Leaf x, ts)
 aux (OperT op:ts) = 
             let (lft, afterLeft) = aux ts
                 (rgt, afterRight) = aux afterLeft
             in (Node op lft rgt, afterRight)
+
+--Step 3
+evalString :: String -> Maybe Integer
+evalString = undefined
+
+
 
 foo = let wlAlpha = 1:wlBeta
           wlBeta = 2:wlAlpha
@@ -83,10 +90,5 @@ isOp (OperT op) = True
 numOps :: AST -> Integer
 numOps (Leaf x) = 0
 numOps (Node op lft rgt) = 1 + (numOps lft) + (numOps rgt)
-
-
---Step 3
-evalString :: String -> Maybe Integer
-evalString = undefined
 
 
