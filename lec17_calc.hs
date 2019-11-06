@@ -1,3 +1,4 @@
+import Control.Monad
 import Data.Char
 
 inputStr = "+ 7 / 232 * 3 4"
@@ -40,25 +41,52 @@ goalAST = Node Plus (Leaf 7) (Node Div (Leaf 232) (Node Mult (Leaf 3) (Leaf 4)))
 tokenGoal2 = [OperT Plus, OperT Mult, NumT 2, NumT 3, OperT Mult, NumT 3, NumT 4]
 
 --Step 2
-dangerParse :: [Token] -> Maybe AST
+dangerParse :: [Token] -> AST
 dangerParse tokens = 
     let (tree, afterTree) =  aux tokens
     in if null afterTree
        then tree
-       else error "Invalid input."
+       else error "AAAH"
 
-aux :: [Token] -> Maybe (AST, [Token])
-aux [] = error "Invalid input."
+coolParse :: [Token] -> Maybe AST
+coolParse tokens = 
+    do (tree, afterTree) <-  aux2 tokens
+       if null afterTree
+         then Just tree
+         else Nothing
+
+aux :: [Token] -> (AST, [Token])
+aux [] = error "AAAH"
 aux (NumT x:ts) = (Leaf x, ts)
 aux (OperT op:ts) = 
-            let (lft, afterLeft) = aux ts
+            let lftTuple = aux ts
+                (lft, afterLeft) = lftTuple
                 (rgt, afterRight) = aux afterLeft
             in (Node op lft rgt, afterRight)
 
+aux2 :: [Token] -> Maybe (AST, [Token])
+aux2 [] = Nothing
+aux2 (NumT x:ts) = Just (Leaf x, ts)
+aux2 (OperT op:ts) = 
+            do lftTuple  <- aux2 ts
+               let (lft, afterLeft) = lftTuple
+               (rgt, afterRight) <- aux2 afterLeft
+               return (Node op lft rgt, afterRight)
+
 --Step 3
 evalString :: String -> Maybe Integer
-evalString = undefined
+evalString string =
+  do let wrds = words string
+     toks <- mapM lexer wrds
+     ast <- coolParse toks
+     return (eval ast)
 
+mysequence [] = Just []
+mysequence (x:xs) = 
+  do xv <- x
+     xsv <- mysequence xs
+     return (xv:xsv)
+  
 
 
 foo = let wlAlpha = 1:wlBeta
