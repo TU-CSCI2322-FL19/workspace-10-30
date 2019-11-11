@@ -7,7 +7,11 @@ main = do
   name <- getLine
   putStrLn "Here is your fortune."
   putStrLn $ "\t" ++ (fortuneLookup name fortunes)
-  main
+  putStr $ "Would you like another fortune? "
+  answer <- getLine
+  if map toLower answer `elem` ["y","yes","sure"]
+  then main
+  else return ()
 
 fortuneLookup :: String -> [String] -> String
 fortuneLookup name fortunes =
