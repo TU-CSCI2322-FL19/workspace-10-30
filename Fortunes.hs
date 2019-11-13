@@ -10,7 +10,8 @@ import Data.Char
 --  Accept yes/y no/n in any captilization. If they input anything else, ask again.
 
 --Extra Fun Problems: Problems 4-7
---  4) Feature creep! Ask the user what they want, and support the following operations. 
+--  4) Stop asking for a number: just give them the next fortune in the list.
+--  5) Feature creep! Ask the user what they want, and support the following operations. 
 --  Get each one working before you move on to the next.
 --  Hint: Make an "Request" data-type and a parseRequest:: String -> Request function. 
 --   a) "Give me a fortune" (or any string with fortune in it)
@@ -19,10 +20,9 @@ import Data.Char
 --      Remember whatever comes after the command, and print it out on every prompt
 --   c) "Remind me" 
 --      Only print out the string when told to remind them
---  5) Make parseRequest more robust: return a Maybe Request. 
---  6) Add an action "What is _____" that evaluates a prefix mathematical expression and prints it
+--  6) Make parseRequest more robust: return a Maybe Request. 
+--  7) Add an action "What is _____" that evaluates a prefix mathematical expression and prints it
 --out. You'll need to load Calc.hs.
---  7) Stop asking for a number: just give them the next fortune in the list.
 
 prompt :: String -> IO String
 prompt message = 
