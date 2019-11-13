@@ -24,20 +24,27 @@ import Data.Char
 --out. You'll need to load Calc.hs.
 --  7) Stop asking for a number: just give them the next fortune in the list.
 
+prompt :: String -> IO String
+prompt message = 
+  do putStr message
+     getLine
 
 main :: IO ()
 main = do
   bigFortune <- readFile "fortunes.txt"
   let fortunes = lines bigFortune
-  putStr "Please enter your name: "
-  name <- getLine
+  giveFortune fortunes
+
+giveFortune :: [String] -> IO ()
+giveFortune fortunes = do
+  name <- prompt "Please enter your name: "
   putStrLn "Here is your fortune."
   putStrLn $ "\t" ++ (fortuneLookup name fortunes)
-  putStr $ "Would you like another fortune? "
-  answer <- getLine
+  answer <- prompt "Would you like another fortune? "
   if map toLower answer `elem` ["y","yes","sure"]
-  then main
+  then giveFortune fortunes
   else return ()
+
 
 fortuneLookup :: String -> [String] -> String
 fortuneLookup name fortunes =
