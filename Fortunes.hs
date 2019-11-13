@@ -8,9 +8,9 @@ import Data.Char
 --  fortune.
 --  3) Make an action getBool :: IO Bool to get a Yes/No response. 
 --  Accept yes/y no/n in any captilization. If they input anything else, ask again.
+--  4) Stop asking for a number: just give them the next fortune in the list.
 
 --Extra Fun Problems: Problems 4-7
---  4) Stop asking for a number: just give them the next fortune in the list.
 --  5) Feature creep! Ask the user what they want, and support the following operations. 
 --  Get each one working before you move on to the next.
 --  Hint: Make an "Request" data-type and a parseRequest:: String -> Request function. 
