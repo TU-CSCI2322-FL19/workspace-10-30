@@ -1,28 +1,21 @@
 import Data.Char
---Problems 0-2 will be done as a class.
---  0) Stop reading in the file every time.
---  1) Make an action to prompt the user and get a response.
---
---Core Exercise: Problems 2-4
---  2) Ask their name once. Remember it and print it out each time. Ask for a number for the
---  fortune.
---  3) Make an action getBool :: IO Bool to get a Yes/No response. 
---  Accept yes/y no/n in any captilization. If they input anything else, ask again.
---  4) Stop asking for a number: just give them the next fortune in the list.
+import Debug.Trace
+import System.Environment
+import System.Console.GetOpt
+import Text.Read
 
---Extra Fun Problems: Problems 4-7
---  5) Feature creep! Ask the user what they want, and support the following operations. 
---  Get each one working before you move on to the next.
---  Hint: Make an "Request" data-type and a parseRequest:: String -> Request function. 
---   a) "Give me a fortune" (or any string with fortune in it)
---      Ask for a number, and print out the corresponding fortune
---   b) "Remember _______" 
---      Remember whatever comes after the command, and print it out on every prompt
---   c) "Remind me" 
---      Only print out the string when told to remind them
---  6) Make parseRequest more robust: return a Maybe Request. 
---  7) Add an action "What is _____" that evaluates a prefix mathematical expression and prints it
---out. You'll need to load Calc.hs.
+-- --name name -n name to define the name. If not defined, ask for it.
+-- -k <k> print out k fortunes
+-- --help -h -q
+-- something (tbd) for non-interactive mode
+
+data Flag = Help | Name String | NonInteractive | Count String deriving (Eq, Show)
+
+options :: [OptDescr Flag]
+options = [ Option ['h'] ["help"] (NoArg Help)           "Print usage information and exit."
+          , Option ['n'] ["name"] (ReqArg Name "<name>") "Define the user's name."
+          , Option ['k'] []       (ReqArg Count "<num>") "Print out <num> fortunes."
+          ]
 
 prompt :: String -> IO String
 prompt message = 
@@ -31,22 +24,54 @@ prompt message =
 
 main :: IO ()
 main = do
-  bigFortune <- readFile "fortunes.txt"
-  let fortunes = lines bigFortune
-  giveFortune fortunes
+  args <- getArgs
+  let (flags, inputs, errors) = getOpt Permute options args
+  putStrLn (show flags)
+  if (Help `elem` flags) || (not $ null errors) || length inputs > 1
+  then putStrLn $ usageInfo "Usage: fortunes [options] [file]" options
+  else do
+    let filename = if null inputs then "fortunes.txt" else head inputs
+    bigFortune <- readFile filename
+    let fortunes = lines bigFortune
+    name <- getName flags
+    case getCount flags of
+      Nothing -> giveFortune fortunes name
+      Just k -> giveKFortunes fortunes name k
 
-giveFortune :: [String] -> IO ()
-giveFortune fortunes = do
-  name <- prompt "Please enter your name: "
-  putStrLn "Here is your fortune."
-  putStrLn $ "\t" ++ (fortuneLookup name fortunes)
-  answer <- prompt "Would you like another fortune? "
-  if map toLower answer `elem` ["y","yes","sure"]
-  then giveFortune fortunes
-  else return ()
+getName :: [Flag] -> IO String
+getName ((Name s):_) = return s
+getName (_:flags) = getName flags
+getName [] = prompt "Please enter your name: "
+
+getCount :: [Flag] -> Maybe Int
+getCount ((Count s):_) = readMaybe s
+getCount (_:flags) = getCount flags
+getCount [] = Nothing
+
+giveKFortunes :: [String] -> String -> Int -> IO ()
+giveKFortunes fortunes name count =
+  do let chosenFortunes = fortunesLookup name fortunes count
+     sequence (map putStrLn chosenFortunes)
+     return ()
 
 
-fortuneLookup :: String -> [String] -> String
-fortuneLookup name fortunes =
+
+giveFortune :: [String] -> String -> IO ()
+giveFortune fortunes name = aux 0
+  where aux i = do putStrLn $ "Here is your fortune, " ++ name ++ "."
+                   putStrLn $ "\t" ++ (fortuneLookup name fortunes i)
+                   answer <- prompt "Would you like another fortune? "
+                   if map toLower answer `elem` ["y","yes","sure"]
+                   then aux (i+1)
+                   else return ()
+
+
+fortuneLookup :: String -> [String] -> Int -> String
+fortuneLookup name fortunes i =
   let index = sum [ord c | c <- name] `mod` length fortunes
-  in fortunes !! index
+  in fortunes !! (index+i)
+
+fortunesLookup :: String -> [String] -> Int -> [String]
+fortunesLookup name fortunes count =
+  let index = sum [ord c | c <- name] `mod` length fortunes
+  in take count (drop index fortunes)
